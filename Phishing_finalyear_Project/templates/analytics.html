@@ -1,0 +1,879 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics - Phishing Detection System{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        .analytics-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+            border-radius: 15px;
+            margin-bottom: 40px;
+        }
+
+        .analytics-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .analytics-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 10px 0;
+        }
+
+        .metric-label {
+            color: #666;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .chart-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .chart-header h3 {
+            color: #333;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .chart-header p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 400px;
+            margin: 20px 0;
+        }
+
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .performance-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .performance-card h4 {
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .performance-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .confusion-matrix {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2px;
+            max-width: 300px;
+            margin: 20px auto;
+            border: 2px solid #333;
+        }
+
+        .matrix-cell {
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .matrix-header {
+            background: #f8f9fa;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .matrix-value {
+            font-size: 1.2rem;
+            margin-top: 5px;
+        }
+
+        .tp { background: #d4edda; color: #155724; }
+        .fp { background: #f8d7da; color: #721c24; }
+        .tn { background: #d1ecf1; color: #0c5460; }
+        .fn { background: #fff3cd; color: #856404; }
+
+        .severity-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .severity-bar {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 5px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .severity-label {
+            width: 100px;
+            flex-shrink: 0;
+        }
+
+        .severity-fill {
+            height: 20px;
+            border-radius: 10px;
+            margin-left: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .severity-critical { background: linear-gradient(135deg, #dc3545 0%, #f5576c 100%); }
+        .severity-high { background: linear-gradient(135deg, #fd7e14 0%, #ff9800 100%); }
+        .severity-medium { background: linear-gradient(135deg, #ffc107 0%, #ffeb3b 100%); color: #333; }
+        .severity-low { background: linear-gradient(135deg, #28a745 0%, #4caf50 100%); }
+        .severity-safe { background: linear-gradient(135deg, #6f42c1 0%, #9c27b0 100%); }
+
+        .heatmap-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .heatmap-table {
+            border-collapse: collapse;
+            margin: 0 auto;
+            font-size: 0.8rem;
+        }
+
+        .heatmap-cell {
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            border: 1px solid #ddd;
+            font-weight: 600;
+        }
+
+        .heatmap-label {
+            padding: 8px;
+            text-align: center;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .speed-card {
+            background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .speed-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-style: italic;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <!-- Analytics Header -->
+    <div class="analytics-header">
+        <h1><i class="fas fa-chart-line"></i> Analytics Dashboard</h1>
+        <p>Comprehensive insights into phishing detection performance and metrics</p>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <i class="fas fa-bullseye" style="font-size: 2rem; color: #667eea;"></i>
+            <div class="metric-value">{{ accuracy }}%</div>
+            <div class="metric-label">Detection Accuracy</div>
+        </div>
+        <div class="metric-card">
+            <i class="fas fa-tachometer-alt" style="font-size: 2rem; color: #28a745;"></i>
+            <div class="metric-value">{{ avg_speed }}ms</div>
+            <div class="metric-label">Avg Detection Speed</div>
+        </div>
+        <div class="metric-card">
+            <i class="fas fa-shield-alt" style="font-size: 2rem; color: #dc3545;"></i>
+            <div class="metric-value">{{ stats.phishing }}</div>
+            <div class="metric-label">Phishing Detected</div>
+        </div>
+        <div class="metric-card">
+            <i class="fas fa-check-circle" style="font-size: 2rem; color: #20c997;"></i>
+            <div class="metric-value">{{ stats.legit }}</div>
+            <div class="metric-label">Safe URLs Verified</div>
+        </div>
+    </div>
+
+    <!-- Model Performance Metrics -->
+    <div class="chart-container">
+        <div class="chart-header">
+            <h3><i class="fas fa-cogs"></i> Model Performance Metrics</h3>
+            <p>Key performance indicators for the phishing detection model</p>
+        </div>
+        <div class="performance-metrics">
+            <div class="performance-card">
+                <h4>Accuracy</h4>
+                <div class="performance-value">{{ performance.accuracy }}%</div>
+            </div>
+            <div class="performance-card">
+                <h4>Precision</h4>
+                <div class="performance-value">{{ performance.precision }}%</div>
+            </div>
+            <div class="performance-card">
+                <h4>Recall</h4>
+                <div class="performance-value">{{ performance.recall }}%</div>
+            </div>
+            <div class="performance-card">
+                <h4>F1-Score</h4>
+                <div class="performance-value">{{ performance.f1_score }}%</div>
+            </div>
+            <div class="performance-card">
+                <h4>Specificity</h4>
+                <div class="performance-value">{{ performance.specificity }}%</div>
+            </div>
+        </div>
+        <!-- Performance Metrics Chart -->
+        <div class="chart-wrapper" style="height: 300px; margin-top: 30px;">
+            <canvas id="performanceMetricsChart"></canvas>
+        </div>
+        <!-- Alternative Bar Chart -->
+        <div class="chart-wrapper" style="height: 300px; margin-top: 20px;">
+            <canvas id="performanceBarChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Charts Row 1 -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px; margin-bottom: 30px;">
+        <!-- Phishing vs Non-Phishing Chart -->
+        <div class="chart-container">
+            <div class="chart-header">
+                <h3><i class="fas fa-chart-pie"></i> Phishing vs Non-Phishing</h3>
+                <p>Distribution of detected phishing and legitimate URLs</p>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="phishingVsLegitChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Confusion Matrix -->
+        <div class="chart-container">
+            <div class="chart-header">
+                <h3><i class="fas fa-table"></i> Confusion Matrix</h3>
+                <p>Model prediction accuracy breakdown</p>
+            </div>
+            <div style="text-align: center; margin: 20px 0;">
+                <div class="confusion-matrix">
+                    <div class="matrix-cell matrix-header">Predicted<br>Phishing</div>
+                    <div class="matrix-cell matrix-header">Predicted<br>Legitimate</div>
+                    <div class="matrix-cell matrix-header">Actual<br>Phishing</div>
+                    <div class="matrix-cell tp">
+                        True Positive
+                        <div class="matrix-value">{{ confusion.true_positive }}</div>
+                    </div>
+                    <div class="matrix-cell fn">
+                        False Negative
+                        <div class="matrix-value">{{ confusion.false_negative }}</div>
+                    </div>
+                    <div class="matrix-cell matrix-header">Actual<br>Legitimate</div>
+                    <div class="matrix-cell fp">
+                        False Positive
+                        <div class="matrix-value">{{ confusion.false_positive }}</div>
+                    </div>
+                    <div class="matrix-cell tn">
+                        True Negative
+                        <div class="matrix-value">{{ confusion.true_negative }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 2 -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px; margin-bottom: 30px;">
+        <!-- Alert Severity Distribution -->
+        <div class="chart-container">
+            <div class="chart-header">
+                <h3><i class="fas fa-exclamation-triangle"></i> Alert Severity Distribution</h3>
+                <p>Breakdown of detection confidence levels</p>
+            </div>
+            <div class="severity-chart">
+                <div class="severity-bar">
+                    <div class="severity-label">Critical</div>
+                    <div class="severity-fill severity-critical" style="width: {{ severity.critical_percent }}%"></div>
+                    <span style="margin-left: 10px; color: #333;">{{ severity.critical }}</span>
+                </div>
+                <div class="severity-bar">
+                    <div class="severity-label">High</div>
+                    <div class="severity-fill severity-high" style="width: {{ severity.high_percent }}%"></div>
+                    <span style="margin-left: 10px; color: #333;">{{ severity.high }}</span>
+                </div>
+                <div class="severity-bar">
+                    <div class="severity-label">Medium</div>
+                    <div class="severity-fill severity-medium" style="width: {{ severity.medium_percent }}%"></div>
+                    <span style="margin-left: 10px; color: #333;">{{ severity.medium }}</span>
+                </div>
+                <div class="severity-bar">
+                    <div class="severity-label">Low</div>
+                    <div class="severity-fill severity-low" style="width: {{ severity.low_percent }}%"></div>
+                    <span style="margin-left: 10px; color: #333;">{{ severity.low }}</span>
+                </div>
+                <div class="severity-bar">
+                    <div class="severity-label">Safe</div>
+                    <div class="severity-fill severity-safe" style="width: {{ severity.safe_percent }}%"></div>
+                    <span style="margin-left: 10px; color: #333;">{{ severity.safe }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detection Speed Card -->
+        <div class="speed-card">
+            <i class="fas fa-rocket" style="font-size: 3rem; margin-bottom: 15px;"></i>
+            <h3>Average Detection Speed</h3>
+            <div class="speed-value">{{ avg_speed }}ms</div>
+            <p>Lightning-fast URL analysis</p>
+            <div style="margin-top: 15px;">
+                <small>Processed {{ stats.total }} URLs with average response time</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Correlation Heatmap -->
+    <div class="chart-container">
+        <div class="chart-header">
+            <h3><i class="fas fa-fire"></i> Feature Correlation Heatmap</h3>
+            <p>Correlation matrix showing relationships between URL features and phishing detection</p>
+        </div>
+        <div class="heatmap-container">
+            <table class="heatmap-table">
+                <tr>
+                    <td class="heatmap-label"></td>
+                    {% for feature in heatmap.features %}
+                    <td class="heatmap-label">{{ feature }}</td>
+                    {% endfor %}
+                </tr>
+                {% for row in heatmap.rows %}
+                <tr>
+                    <td class="heatmap-label">{{ row.feature }}</td>
+                    {% for cell in row.cells %}
+                    <td class="heatmap-cell" style="background-color: hsl({{ cell.hue }}, 70%, 50%); color: white;">
+                        {{ cell.value }}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <small style="color: #666;">
+                <span style="color: hsl(120, 70%, 50%);">■</span> Strong Positive Correlation
+                <span style="color: hsl(60, 70%, 50%); margin-left: 15px;">■</span> Moderate Correlation
+                <span style="color: hsl(0, 70%, 50%); margin-left: 15px;">■</span> Strong Negative Correlation
+            </small>
+        </div>
+    </div>
+
+    <!-- Performance Over Time Chart -->
+    <div class="chart-container">
+        <div class="chart-header">
+            <h3><i class="fas fa-chart-area"></i> Detection Performance Trends</h3>
+            <p>Model accuracy and detection patterns over time</p>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="performanceTrendChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Refresh Button -->
+    <div style="text-align: center;">
+        <button class="refresh-btn" onclick="location.reload()">
+            <i class="fas fa-sync-alt"></i> Refresh Analytics
+        </button>
+    </div>
+
+    {% if stats.total == 0 %}
+    <div class="no-data">
+        <i class="fas fa-chart-line" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+        <p>No data available yet. Start analyzing URLs to see analytics!</p>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Initialize Charts
+        function initializeCharts() {
+            try {
+                // Fetch analytics data from API
+                fetch('/api/analytics-data')
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Analytics data received:', data);
+                        
+                        if (!data.success) {
+                            console.warn('Analytics data fetch failed:', data.error);
+                            return;
+                        }
+
+                        const stats = data.stats || { phishing: 0, legit: 0, total: 0 };
+                        const phishing = stats.phishing || 0;
+                        const legit = stats.legit || 0;
+                        const total = phishing + legit;
+
+                        console.log('Initializing charts with data:', { phishing, legit, total });
+
+                        // Phishing vs Legitimate Chart
+                        const phishingChartCtx = document.getElementById('phishingVsLegitChart');
+                        if (phishingChartCtx) {
+                            if (total > 0) {
+                                console.log('Creating phishing vs legit chart');
+                                new Chart(phishingChartCtx, {
+                                    type: 'doughnut',
+                                    data: {
+                                        labels: ['Phishing URLs', 'Legitimate URLs'],
+                                        datasets: [{
+                                            data: [phishing, legit],
+                                            backgroundColor: ['#dc3545', '#28a745'],
+                                            borderColor: ['#c82333', '#20c997'],
+                                            borderWidth: 3
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        plugins: {
+                                            legend: {
+                                                position: 'bottom',
+                                                labels: {
+                                                    padding: 20,
+                                                    font: { size: 14, weight: 'bold' }
+                                                }
+                                            },
+                                            tooltip: {
+                                                callbacks: {
+                                                    label: function(context) {
+                                                        const label = context.label || '';
+                                                        const value = context.parsed || 0;
+                                                        const percentage = ((value / total) * 100).toFixed(1);
+                                                        return `${label}: ${value} (${percentage}%)`;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                                console.log('Phishing vs legit chart created successfully');
+                            } else {
+                                console.log('No data available - skipping phishing chart');
+                            }
+                        } else {
+                            console.warn('Phishing chart canvas not found');
+                        }
+
+                        // Performance Metrics Chart - From API data
+                        const performanceChartCtx = document.getElementById('performanceMetricsChart');
+                        if (performanceChartCtx) {
+                            const performance = data.performance || {
+                                accuracy: 0,
+                                precision: 0,
+                                recall: 0,
+                                f1_score: 0,
+                                specificity: 0
+                            };
+                            
+                            const performanceData = {
+                                accuracy: performance.accuracy || 0,
+                                precision: performance.precision || 0,
+                                recall: performance.recall || 0,
+                                f1_score: performance.f1_score || 0,
+                                specificity: performance.specificity || 0
+                            };
+
+                            new Chart(performanceChartCtx, {
+                                type: 'radar',
+                                data: {
+                                    labels: ['Accuracy', 'Precision', 'Recall', 'F1-Score', 'Specificity'],
+                                    datasets: [{
+                                        label: 'Performance Metrics (%)',
+                                        data: [
+                                            performanceData.accuracy,
+                                            performanceData.precision,
+                                            performanceData.recall,
+                                            performanceData.f1_score,
+                                            performanceData.specificity
+                                        ],
+                                        backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                                        borderColor: '#667eea',
+                                        borderWidth: 3,
+                                        pointBackgroundColor: '#667eea',
+                                        pointBorderColor: '#fff',
+                                        pointHoverBackgroundColor: '#fff',
+                                        pointHoverBorderColor: '#667eea',
+                                        pointRadius: 6,
+                                        pointHoverRadius: 8
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: {
+                                            position: 'top',
+                                            labels: {
+                                                font: { size: 14, weight: 'bold' }
+                                            }
+                                        },
+                                        tooltip: {
+                                            callbacks: {
+                                                label: function(context) {
+                                                    const parsed = context.parsed;
+                                                    const value = (parsed && typeof parsed === 'object') ? (parsed.r ?? parsed) : parsed;
+                                                    return `${context.label}: ${value}%`;
+                                                }
+                                            }
+                                        }
+                                    },
+                                    scales: {
+                                        r: {
+                                            beginAtZero: true,
+                                            max: 100,
+                                            ticks: {
+                                                stepSize: 20,
+                                                callback: function(value) {
+                                                    return value + '%';
+                                                },
+                                                font: { weight: 'bold' }
+                                            },
+                                            grid: {
+                                                color: 'rgba(102, 126, 234, 0.2)'
+                                            },
+                                            angleLines: {
+                                                color: 'rgba(102, 126, 234, 0.3)'
+                                            },
+                                            pointLabels: {
+                                                font: { size: 12, weight: 'bold' },
+                                                color: '#333'
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+
+                            // Performance Metrics Bar Chart
+                            const barChartCtx = document.getElementById('performanceBarChart');
+                            if (barChartCtx) {
+                                new Chart(barChartCtx, {
+                                    type: 'bar',
+                                    data: {
+                                        labels: ['Accuracy', 'Precision', 'Recall', 'F1-Score', 'Specificity'],
+                                        datasets: [{
+                                            label: 'Performance Metrics (%)',
+                                            data: [
+                                                performanceData.accuracy,
+                                                performanceData.precision,
+                                                performanceData.recall,
+                                                performanceData.f1_score,
+                                                performanceData.specificity
+                                            ],
+                                            backgroundColor: [
+                                                'rgba(102, 126, 234, 0.7)',
+                                                'rgba(40, 167, 69, 0.7)',
+                                                'rgba(220, 53, 69, 0.7)',
+                                                'rgba(255, 193, 7, 0.7)',
+                                                'rgba(108, 117, 125, 0.7)'
+                                            ],
+                                            borderColor: [
+                                                '#667eea',
+                                                '#28a745',
+                                                '#dc3545',
+                                                '#ffc107',
+                                                '#6c757d'
+                                            ],
+                                            borderWidth: 2,
+                                            borderRadius: 5,
+                                            borderSkipped: false
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        plugins: {
+                                            legend: {
+                                                position: 'top',
+                                                labels: {
+                                                    font: { size: 14, weight: 'bold' }
+                                                }
+                                            },
+                                            tooltip: {
+                                                callbacks: {
+                                                    label: function(context) {
+                                                        const value = context.parsed && context.parsed.y !== undefined ? context.parsed.y : context.parsed;
+                                                        return `${context.label}: ${value}%`;
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true,
+                                                max: 100,
+                                                ticks: {
+                                                    stepSize: 20,
+                                                    callback: function(value) {
+                                                        return value + '%';
+                                                    },
+                                                    font: { weight: 'bold' }
+                                                },
+                                                grid: {
+                                                    color: 'rgba(102, 126, 234, 0.2)'
+                                                }
+                                            },
+                                            x: {
+                                                ticks: {
+                                                    font: { weight: 'bold' }
+                                                },
+                                                grid: {
+                                                    display: false
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                            console.log('Performance metrics charts created successfully');
+                        }
+
+                        // Performance Trend Chart - Fetch from API
+                        const trendChartCtx = document.getElementById('performanceTrendChart');
+                        console.log('Trend chart canvas:', trendChartCtx);
+                        if (trendChartCtx) {
+                            fetch('/api/performance-trends')
+                                .then(response => response.json())
+                                .then(trendData => {
+                                    console.log('Trend data received:', trendData);
+                                    const trends = (trendData.success && trendData.trends) ? trendData.trends : null;
+                                    
+                                    if (trends && trends.labels && trends.labels.length > 0) {
+                                        try {
+                                            new Chart(trendChartCtx, {
+                                                type: 'line',
+                                                data: {
+                                                    labels: trends.labels,
+                                                    datasets: [{
+                                                        label: 'Detection Accuracy (%)',
+                                                        data: trends.accuracy || [],
+                                                        borderColor: '#28a745',
+                                                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                                                        borderWidth: 3,
+                                                        fill: true,
+                                                        tension: 0.4,
+                                                        pointBackgroundColor: '#28a745',
+                                                        pointBorderColor: '#fff',
+                                                        pointRadius: 6,
+                                                        pointHoverRadius: 8
+                                                    }, {
+                                                        label: 'Phishing URLs Detected',
+                                                        data: trends.phishing_detected || [],
+                                                        borderColor: '#dc3545',
+                                                        backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                                                        borderWidth: 3,
+                                                        fill: true,
+                                                        tension: 0.4,
+                                                        pointBackgroundColor: '#dc3545',
+                                                        pointBorderColor: '#fff',
+                                                        pointRadius: 6,
+                                                        pointHoverRadius: 8,
+                                                        yAxisID: 'y1'
+                                                    }]
+                                                },
+                                                options: {
+                                                    responsive: true,
+                                                    maintainAspectRatio: false,
+                                                    interaction: {
+                                                        mode: 'index',
+                                                        intersect: false,
+                                                    },
+                                                    plugins: {
+                                                        legend: {
+                                                            position: 'top',
+                                                            labels: {
+                                                                padding: 20,
+                                                                font: { size: 14, weight: 'bold' }
+                                                            }
+                                                        },
+                                                        tooltip: {
+                                                            callbacks: {
+                                                                label: function(context) {
+                                                                    let label = context.dataset.label || '';
+                                                                    if (label) {
+                                                                        label += ': ';
+                                                                    }
+                                                                    const parsedValue = context.parsed && context.parsed.y !== undefined ? context.parsed.y : context.parsed;
+                                                                    if (context.datasetIndex === 0) {
+                                                                        label += parsedValue + '%';
+                                                                    } else {
+                                                                        label += parsedValue + ' URLs';
+                                                                    }
+                                                                    return label;
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    scales: {
+                                                        x: {
+                                                            display: true,
+                                                            title: {
+                                                                display: true,
+                                                                text: 'Time',
+                                                                font: { weight: 'bold' }
+                                                            },
+                                                            ticks: {
+                                                                font: { weight: 'bold' }
+                                                            },
+                                                            grid: {
+                                                                display: false
+                                                            }
+                                                        },
+                                                        y: {
+                                                            type: 'linear',
+                                                            display: true,
+                                                            position: 'left',
+                                                            title: {
+                                                                display: true,
+                                                                text: 'Accuracy (%)',
+                                                                font: { weight: 'bold' }
+                                                            },
+                                                            ticks: {
+                                                                callback: function(value) {
+                                                                    return value + '%';
+                                                                },
+                                                                font: { weight: 'bold' }
+                                                            },
+                                                            grid: {
+                                                                color: 'rgba(102, 126, 234, 0.1)'
+                                                            }
+                                                        },
+                                                        y1: {
+                                                            type: 'linear',
+                                                            display: true,
+                                                            position: 'right',
+                                                            title: {
+                                                                display: true,
+                                                                text: 'URLs Detected',
+                                                                font: { weight: 'bold' }
+                                                            },
+                                                            ticks: {
+                                                                font: { weight: 'bold' }
+                                                            },
+                                                            grid: {
+                                                                drawOnChartArea: false,
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            });
+                                            console.log('Trend chart created successfully');
+                                        } catch (chartError) {
+                                            console.error('Error creating trend chart:', chartError);
+                                        }
+                                    } else {
+                                        console.log('No trend data available or labels empty');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error fetching trend data:', error);
+                                });
+                        } else {
+                            console.warn('Trend chart canvas not found');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching analytics data:', error);
+                    });
+            } catch (error) {
+                console.error('Error in initializeCharts:', error);
+            }
+        }
+
+        // Initialize Charts on DOM ready
+        document.addEventListener('DOMContentLoaded', initializeCharts);
+    </script>
+{% endblock %}

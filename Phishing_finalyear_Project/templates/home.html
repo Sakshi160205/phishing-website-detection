@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Phishing Detection System{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+            border-radius: 15px;
+            margin-bottom: 60px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .hero-section h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            animation: slideDown 0.6s ease;
+        }
+
+        .hero-section p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .hero-buttons {
+            margin-top: 30px;
+            animation: slideUp 0.6s ease;
+        }
+
+        .hero-buttons .btn {
+            margin: 0 10px;
+            padding: 12px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
+        }
+
+        .feature-card i {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .feature-card h3 {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .feature-card p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .stats-section {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin: 40px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            color: #666;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(245, 87, 108, 0.2);
+        }
+
+        .info-box h4 {
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .image-hero {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .image-hero img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .cta-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <h1><i class="fas fa-shield-alt"></i> Welcome to PhishGuard</h1>
+        <p>Your Advanced Line of Defense Against Phishing Attacks</p>
+        <div class="hero-buttons">
+            <a href="/detector" class="btn btn-light btn-lg">
+                <i class="fas fa-check-circle"></i> Start Detection
+            </a>
+            <a href="/about" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-info-circle"></i> Learn More
+            </a>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row mb-5">
+        <h2 style="text-align: center; color: white; margin-bottom: 40px; font-weight: 700;">
+            <i class="fas fa-rocket"></i> Our Features
+        </h2>
+        
+        <div class="col-md-4 mb-4">
+            <div class="feature-card">
+                <i class="fas fa-brain"></i>
+                <h3>AI-Powered Detection</h3>
+                <p>Advanced machine learning algorithms trained on thousands of phishing and legitimate URLs to provide accurate results.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="feature-card">
+                <i class="fas fa-bolt"></i>
+                <h3>Lightning Fast</h3>
+                <p>Get instant analysis of any URL in milliseconds. Real-time protection for your online safety.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="feature-card">
+                <i class="fas fa-lock"></i>
+                <h3>Secure & Private</h3>
+                <p>Your data is encrypted and never stored. Complete privacy protection with zero data collection.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="feature-card">
+                <i class="fas fa-chart-line"></i>
+                <h3>Detailed Analytics</h3>
+                <p>Get comprehensive statistics and historical data on all your URL scans in one place.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="feature-card">
+                <i class="fas fa-mobile-alt"></i>
+                <h3>100% Responsive</h3>
+                <p>Works seamlessly on desktop, tablet, and mobile devices. Detection anywhere, anytime.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="feature-card">
+                <i class="fas fa-history"></i>
+                <h3>Scan History</h3>
+                <p>Keep track of all your previous scans with detailed confidence scores and timestamps.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Section -->
+    <div class="stats-section">
+        <h2 style="text-align: center; color: #333; margin-bottom: 40px; font-weight: 700;">
+            <i class="fas fa-chart-pie"></i> Statistics
+        </h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-number">{{ legit }}</div>
+                    <div class="stat-label"><i class="fas fa-check-circle" style="color: #28a745;"></i> Legitimate URLs</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-number">{{ phishing }}</div>
+                    <div class="stat-label"><i class="fas fa-exclamation-circle" style="color: #dc3545;"></i> Phishing URLs</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-number">{{ total }}</div>
+                    <div class="stat-label"><i class="fas fa-globe"></i> Total Scanned</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Why PhishGuard Section -->
+    <div class="info-box">
+        <h4><i class="fas fa-question-circle"></i> Why Choose PhishGuard?</h4>
+        <ul style="list-style: none; padding: 0;">
+            <li><i class="fas fa-check"></i> Protect yourself from phishing attacks and fraud</li>
+            <li><i class="fas fa-check"></i> Verify suspicious links before clicking</li>
+            <li><i class="fas fa-check"></i> Identify malicious websites instantly</li>
+            <li><i class="fas fa-check"></i> Free to use with no registration required</li>
+            <li><i class="fas fa-check"></i> Trusted by thousands of users worldwide</li>
+        </ul>
+    </div>
+
+    <!-- Call to Action -->
+    <div style="text-align: center; margin-top: 60px; margin-bottom: 40px;">
+        <h3 style="color: white; font-weight: 700; margin-bottom: 20px;">Ready to Protect Yourself?</h3>
+        <a href="/detector" class="cta-button">
+            <i class="fas fa-arrow-right"></i> Start Checking URLs Now
+        </a>
+    </div>
+{% endblock %}

@@ -1,0 +1,282 @@
+{% extends "base.html" %}
+
+{% block title %}About - Phishing Detection System{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        .about-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+            border-radius: 15px;
+            margin-bottom: 40px;
+        }
+
+        .about-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .about-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .about-content {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .about-content h2 {
+            color: #667eea;
+            font-weight: 700;
+            margin-bottom: 20px;
+            margin-top: 30px;
+        }
+
+        .about-content h2:first-child {
+            margin-top: 0;
+        }
+
+        .about-content p {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        .about-content ul {
+            color: #666;
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .about-content li {
+            margin-bottom: 10px;
+        }
+
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .tech-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .tech-item i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            margin: 30px 0;
+        }
+
+        .timeline-marker {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-right: 30px;
+            flex-shrink: 0;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-content h4 {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .timeline-content p {
+            color: #666;
+            margin: 0;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .highlight-box h3 {
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .highlight-box ul {
+            list-style-position: inside;
+            margin: 0;
+        }
+
+        .highlight-box li {
+            margin-bottom: 10px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <!-- About Header -->
+    <div class="about-header">
+        <h1><i class="fas fa-shield-alt"></i> About PhishGuard</h1>
+        <p>Advanced Protection Against Phishing and Malicious URLs</p>
+    </div>
+
+    <!-- About Content -->
+    <div class="about-content">
+        <h2><i class="fas fa-target"></i> Our Mission</h2>
+        <p>
+            PhishGuard is dedicated to protecting individuals and organizations from phishing attacks, fraudulent websites, 
+            and other cyber threats. Our mission is to make the internet safer by providing accessible, accurate, and 
+            easy-to-use URL analysis tools that everyone can trust.
+        </p>
+
+        <h2><i class="fas fa-lightbulb"></i> How It Works</h2>
+        <p>
+            Our system uses advanced machine learning algorithms trained on thousands of legitimate and phishing URLs. 
+            When you submit a URL for analysis, our AI model examines 12 different features including:
+        </p>
+        <ul>
+            <li>URL length and structure</li>
+            <li>Presence of IP addresses instead of domain names</li>
+            <li>Special character patterns (hyphens, @, dots)</li>
+            <li>HTTPS vs HTTP protocol usage</li>
+            <li>URL entropy analysis</li>
+            <li>Presence of suspicious keywords</li>
+            <li>Query parameter analysis</li>
+            <li>And more advanced metrics</li>
+        </ul>
+
+        <h2><i class="fas fa-cog"></i> Technology Stack</h2>
+        <div class="tech-stack">
+            <div class="tech-item">
+                <i class="fab fa-python"></i>
+                Python
+            </div>
+            <div class="tech-item">
+                <i class="fas fa-server"></i>
+                Django
+            </div>
+            <div class="tech-item">
+                <i class="fas fa-brain"></i>
+                Scikit-Learn
+            </div>
+            <div class="tech-item">
+                <i class="fab fa-bootstrap"></i>
+                Bootstrap 5
+            </div>
+            <div class="tech-item">
+                <i class="fas fa-chart-line"></i>
+                Chart.js
+            </div>
+            <div class="tech-item">
+                <i class="fas fa-lock"></i>
+                CORS Security
+            </div>
+        </div>
+
+        <h2><i class="fas fa-question-circle"></i> What is Phishing?</h2>
+        <p>
+            Phishing is a type of cyber attack where criminals attempt to trick you into revealing sensitive information 
+            or downloading malicious content. They often do this by:
+        </p>
+        <ul>
+            <li>Creating fake websites that look like legitimate ones</li>
+            <li>Sending deceptive emails with suspicious links</li>
+            <li>Using domain names similar to legitimate companies</li>
+            <li>Exploiting urgency or fear to prompt quick action</li>
+            <li>Requesting passwords, credit card numbers, or personal data</li>
+        </ul>
+
+        <div class="highlight-box">
+            <h3><i class="fas fa-exclamation-triangle"></i> Warning Signs of Phishing</h3>
+            <ul>
+                <li>Suspicious sender email addresses</li>
+                <li>Urgent requests for personal or financial information</li>
+                <li>Misspelled domains or unusual URL structures</li>
+                <li>Generic greetings ("Dear Customer" instead of your name)</li>
+                <li>Threats of account closure or security issues</li>
+                <li>Request to confirm passwords or PINs</li>
+                <li>Spelling and grammar errors</li>
+            </ul>
+        </div>
+
+        <h2><i class="fas fa-shield-alt"></i> Security Features</h2>
+        <ul>
+            <li><strong>Private Analysis:</strong> Your data is never stored or shared</li>
+            <li><strong>Encrypted Communication:</strong> All data transmitted securely</li>
+            <li><strong>Real-time Detection:</strong> Instant analysis of any URL</li>
+            <li><strong>Confidence Scoring:</strong> Understand the certainty of results</li>
+            <li><strong>No Malware:</strong> Safe environment to test suspicious URLs</li>
+        </ul>
+
+        <h2><i class="fas fa-history"></i> History</h2>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-marker">v1.0</div>
+                <div class="timeline-content">
+                    <h4>Initial Release</h4>
+                    <p>PhishGuard launched with core URL detection capabilities and basic analytics.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-marker">v1.1</div>
+                <div class="timeline-content">
+                    <h4>Enhanced Machine Learning</h4>
+                    <p>Improved detection accuracy with more advanced feature extraction algorithms.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-marker">v2.0</div>
+                <div class="timeline-content">
+                    <h4>Multi-Page Interface</h4>
+                    <p>Added user authentication, registration, and comprehensive about section.</p>
+                </div>
+            </div>
+        </div>
+
+        <h2><i class="fas fa-hands-helping"></i> Support & Feedback</h2>
+        <p>
+            We're constantly working to improve PhishGuard. If you have any questions, encounter any issues, or have 
+            suggestions for improvement, please don't hesitate to contact us. Your feedback helps us make the internet 
+            safer for everyone.
+        </p>
+
+        <h2><i class="fas fa-copyright"></i> Legal</h2>
+        <p>
+            PhishGuard is provided "as-is" without warranties. While we strive for accuracy, no security tool is 100% 
+            effective. Always exercise caution when visiting unknown websites and verify information through official channels.
+        </p>
+    </div>
+{% endblock %}

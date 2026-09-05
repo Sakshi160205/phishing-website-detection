@@ -1,0 +1,683 @@
+{% extends "base.html" %}
+
+{% block title %}Phishing Detector - Phishing Detection System{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        main {
+            padding: 40px 0 !important;
+        }
+
+        /* Input section */
+        .input-section {
+            margin-bottom: 35px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Main card */
+        .main-card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+            animation: slideUp 0.6s ease;
+        }
+
+        /* Result section */
+        .result-section {
+            margin: 30px 0;
+            padding: 25px;
+            border-radius: 10px;
+            display: none;
+            animation: slideIn 0.4s ease;
+        }
+
+        .result-section.show {
+            display: block;
+        }
+
+        .result-section.success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            border-left: 6px solid #28a745;
+        }
+
+        .result-section.danger {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            border-left: 6px solid #dc3545;
+        }
+
+        .result-section.error {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-left: 6px solid #ffc107;
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .result-icon {
+            font-size: 2rem;
+            margin-right: 15px;
+        }
+
+        .result-icon.safe {
+            color: #28a745;
+        }
+
+        .result-icon.danger {
+            color: #dc3545;
+        }
+
+        .result-icon.error {
+            color: #ffc107;
+        }
+
+        .result-text h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .result-text p {
+            margin: 5px 0 0 0;
+            font-size: 0.95rem;
+        }
+
+        .result-details {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 0.95rem;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .detail-value {
+            color: #333;
+            word-break: break-all;
+        }
+
+        .confidence-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        /* Stats section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .stat-card.phishing {
+            background: linear-gradient(135deg, #ffcccc 0%, #ff9999 100%);
+        }
+
+        .stat-card.legit {
+            background: linear-gradient(135deg, #ccffcc 0%, #99ff99 100%);
+        }
+
+        .stat-card.total {
+            background: linear-gradient(135deg, #ccccff 0%, #9999ff 100%);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            opacity: 0.8;
+        }
+
+        /* Charts section */
+        .charts-section {
+            margin: 30px 0;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+        }
+
+        /* History section */
+        .history-section {
+            margin-top: 40px;
+        }
+
+        .history-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .history-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .history-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .history-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .history-table tbody tr:hover {
+            background: #f5f5f5;
+        }
+
+        .badge-legit {
+            background: #28a745;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-phishing {
+            background: #dc3545;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .url-cell {
+            max-width: 300px;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* Header */
+        .detector-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            animation: slideDown 0.6s ease;
+        }
+
+        .detector-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .detector-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Animations */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .detector-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .main-card {
+                padding: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .result-text h2 {
+                font-size: 1.5rem;
+            }
+
+            .url-cell {
+                max-width: 200px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <!-- Header -->
+    <div class="detector-header">
+        <h1><i class="fas fa-search"></i> URL Phishing Detector</h1>
+        <p>Advanced URL Analysis & Security Detection</p>
+    </div>
+
+    <!-- Main Card -->
+    <div class="main-card">
+        <!-- Input Section -->
+        <div class="input-section">
+            <form action="/predict" method="POST" id="predictionForm">
+                {% csrf_token %}
+                <div class="input-group">
+                    <label for="urlInput"><i class="fas fa-link"></i> Enter URL to Check</label>
+                    <input type="text" id="urlInput" name="url" placeholder="e.g., https://example.com" required>
+                </div>
+                <div class="input-group">
+                    <label for="modelSelect"><i class="fas fa-robot"></i> Choose Model</label>
+                    <select id="modelSelect" name="model">
+                        {% if available_models %}
+                            {% for model_name in available_models %}
+                                <option value="{{ model_name }}" {% if model_name == 'random_forest' %}selected{% endif %}>
+                                    {% if model_name == 'random_forest' %}Random Forest{% elif model_name == 'svm' %}SVM{% else %}{{ model_name }}{% endif %}
+                                </option>
+                            {% endfor %}
+                        {% else %}
+                            <option value="random_forest" selected>Random Forest</option>
+                        {% endif %}
+                    </select>
+                </div>
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-search"></i> Analyze URL
+                </button>
+            </form>
+        </div>
+
+        <!-- Result Section -->
+        {% if prediction_text %}
+        <div class="result-section show {% if prediction_status == 'success' %}success{% elif prediction_status == 'danger' %}danger{% else %}error{% endif %}">
+            <div class="result-header">
+                <div class="result-icon {% if prediction_status == 'success' %}safe{% elif prediction_status == 'danger' %}danger{% else %}error{% endif %}">
+                    {% if prediction_status == 'success' %}
+                    <i class="fas fa-check-circle"></i>
+                    {% elif prediction_status == 'danger' %}
+                    <i class="fas fa-exclamation-circle"></i>
+                    {% else %}
+                    <i class="fas fa-info-circle"></i>
+                    {% endif %}
+                </div>
+                <div class="result-text">
+                    <h2>{{ prediction_text }}</h2>
+                    <p>
+                        {% if prediction_status == 'success' %}
+                        This URL appears to be <strong>Safe and Legitimate</strong>
+                        {% elif prediction_status == 'danger' %}
+                        <strong>⚠ WARNING:</strong> This URL is likely a <strong>Phishing Attack</strong>
+                        {% else %}
+                        Unable to process the URL
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            {% if prediction_status != 'error' %}
+            <div class="result-details">
+                <div class="detail-item">
+                    <span class="detail-label">Tested URL:</span>
+                    <span class="detail-value" id="testedUrl">{% if tested_url %}{{ tested_url }}{% else %}N/A{% endif %}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Model Used:</span>
+                    <span class="detail-value">{{ selected_model|default:"Random Forest"|cut:"_"|title }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Accuracy (out of 100):</span>
+                    <span class="detail-value">{% if confidence is not None %}{{ confidence }}{% else %}N/A{% endif %}%</span>
+                </div>
+                {% if confidence is not None %}
+                <div class="confidence-bar">
+                    <div class="confidence-fill" style="width: {{ confidence }}%"></div>
+                </div>
+                {% endif %}
+                <div class="detail-item">
+                    <span class="detail-label">Detection Time:</span>
+                    <span class="detail-value" id="detectionTime">Just now</span>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Statistics Section -->
+        <div class="stats-grid">
+            <div class="stat-card legit">
+                <i class="fas fa-thumbs-up" style="font-size: 2rem; color: #28a745;"></i>
+                <div class="stat-number">{{ legit|default:0 }}</div>
+                <div class="stat-label">Legitimate URLs</div>
+            </div>
+            <div class="stat-card phishing">
+                <i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: #dc3545;"></i>
+                <div class="stat-number">{{ phishing|default:0 }}</div>
+                <div class="stat-label">Phishing URLs</div>
+            </div>
+            <div class="stat-card total">
+                <i class="fas fa-chart-line" style="font-size: 2rem; color: #667eea;"></i>
+                <div class="stat-number">{{ total|default:0 }}</div>
+                <div class="stat-label">Total Analyzed</div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <h3 style="margin-bottom: 20px; font-weight: 700;">📊 Analysis Summary</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div class="chart-container">
+                    <canvas id="pieChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+            {% if total == 0 %}
+            <div style="text-align: center; color: #999; padding: 40px;">
+                <i class="fas fa-chart-line" style="font-size: 2rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                <p>No data yet. Analyze URLs to see the distribution chart!</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- History Section -->
+        <div class="history-section">
+            <h3 class="history-title"><i class="fas fa-history"></i> Recent Scans</h3>
+            {% if history %}
+            <div style="overflow-x: auto;">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-link"></i> URL</th>
+                            <th><i class="fas fa-flag"></i> Result</th>
+                            <th><i class="fas fa-percentage"></i> Confidence</th>
+                            <th><i class="fas fa-clock"></i> Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for h in history %}
+                        <tr>
+                            <td class="url-cell">{{ h.url }}</td>
+                            <td>
+                                {% if h.result == 'Legit' %}
+                                <span class="badge-legit"><i class="fas fa-check"></i> {{ h.result }}</span>
+                                {% else %}
+                                <span class="badge-phishing"><i class="fas fa-times"></i> {{ h.result }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ h.confidence|default:"N/A" }}%</td>
+                            <td>{{ h.time }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <p>No scans yet. Analyze your first URL to get started!</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Initialize Charts
+        function initializeCharts() {
+            try {
+                const phishing = {{ phishing|default:0 }};
+                const legit = {{ legit|default:0 }};
+                const total = phishing + legit;
+
+                console.log("Chart data - Phishing:", phishing, "Legit:", legit, "Total:", total);
+
+                // Pie Chart
+                const pieChartCtx = document.getElementById('pieChart');
+                if (pieChartCtx) {
+                    if (total > 0) {
+                        console.log("Creating pie chart");
+                        new Chart(pieChartCtx, {
+                            type: 'doughnut',
+                            data: {
+                                labels: ['Legitimate URLs', 'Phishing URLs'],
+                                datasets: [{
+                                    data: [legit, phishing],
+                                    backgroundColor: ['#28a745', '#dc3545'],
+                                    borderColor: ['#20c997', '#c82333'],
+                                    borderWidth: 2
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            padding: 20,
+                                            font: { size: 14, weight: 'bold' }
+                                        }
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                const label = context.label || '';
+                                                const value = context.parsed || 0;
+                                                const percentage = ((value / total) * 100).toFixed(1);
+                                                return `${label}: ${value} (${percentage}%)`;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    } else {
+                        console.log("No data for pie chart");
+                    }
+                } else {
+                    console.warn("Pie chart canvas not found");
+                }
+
+                // Bar Chart
+                const barChartCtx = document.getElementById('barChart');
+                if (barChartCtx) {
+                    if (total > 0) {
+                        console.log("Creating bar chart");
+                        new Chart(barChartCtx, {
+                            type: 'bar',
+                            data: {
+                                labels: ['Legitimate', 'Phishing'],
+                                datasets: [{
+                                    label: 'Count',
+                                    data: [legit, phishing],
+                                    backgroundColor: [
+                                        'rgba(40, 167, 69, 0.7)',
+                                        'rgba(220, 53, 69, 0.7)'
+                                    ],
+                                    borderColor: [
+                                        'rgb(40, 167, 69)',
+                                        'rgb(220, 53, 69)'
+                                    ],
+                                    borderWidth: 2,
+                                    borderRadius: 5
+                                }]
+                            },
+                            options: {
+                                indexAxis: 'y',
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: { display: false }
+                                },
+                                scales: {
+                                    x: {
+                                        beginAtZero: true,
+                                        ticks: { font: { weight: 'bold' } }
+                                    },
+                                    y: {
+                                        ticks: { font: { weight: 'bold' } }
+                                    }
+                                }
+                            }
+                        });
+                    } else {
+                        console.log("No data for bar chart");
+                    }
+                } else {
+                    console.warn("Bar chart canvas not found");
+                }
+            } catch (error) {
+                console.error("Error initializing charts:", error);
+            }
+        }
+
+        // Initialize charts when page loads
+        document.addEventListener('DOMContentLoaded', initializeCharts);
+    </script>
+{% endblock %}
